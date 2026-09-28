@@ -2,6 +2,7 @@ import type { GameAction, GameState } from '@/types'
 
 export const INITIAL_GAME_STATE: GameState = {
   phase: 'title',
+  menuScreen: 'main',
   scene: 'title',
   session: null,
   settings: {
@@ -21,10 +22,17 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     case 'BOOT_COMPLETE':
       return { ...state, phase: 'title', scene: 'title' }
 
+    case 'OPEN_MENU':
+      return { ...state, phase: 'menu', menuScreen: 'main', scene: 'title' }
+
+    case 'SET_MENU_SCREEN':
+      return state.menuScreen === action.screen ? state : { ...state, menuScreen: action.screen }
+
     case 'START_GAME':
       return {
         ...state,
         phase: 'loading',
+        menuScreen: 'main',
         session: { playerId: action.playerId, startedAt: Date.now() },
       }
 
@@ -38,7 +46,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return state.phase === 'paused' ? { ...state, phase: 'world' } : state
 
     case 'RETURN_TO_TITLE':
-      return { ...state, phase: 'title', scene: 'title', session: null }
+      return { ...state, phase: 'menu', menuScreen: 'main', scene: 'title', session: null }
 
     case 'SET_FPS':
       return state.fps === action.fps ? state : { ...state, fps: action.fps }

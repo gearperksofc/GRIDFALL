@@ -3,7 +3,6 @@
 import { Swords } from 'lucide-react'
 import { GAME_CONFIG } from '@/data/config'
 import { STRINGS } from '@/data/strings'
-import { createId } from '@/lib/id'
 import { useGameDispatch } from '@/hooks/use-game-store'
 import { RpgButton } from '../ui/rpg-button'
 import { RpgFrame } from '../ui/rpg-frame'
@@ -11,7 +10,7 @@ import { RpgFrame } from '../ui/rpg-frame'
 export function TitleScreen() {
   const dispatch = useGameDispatch()
 
-  const startGame = () => dispatch({ type: 'START_GAME', playerId: createId('player') })
+  const startGame = () => dispatch({ type: 'OPEN_MENU' })
 
   return (
     <section className="flex h-full flex-col items-center justify-between px-6 py-10">

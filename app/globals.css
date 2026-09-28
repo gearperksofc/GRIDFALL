@@ -183,3 +183,93 @@
 @utility animate-float-slow {
   animation: float-slow 4s ease-in-out infinite;
 }
+
+/* ---- Menu principal ---- */
+
+@keyframes particle-rise {
+  0% { transform: translate3d(0, 0, 0) scale(1); opacity: 0; }
+  12% { opacity: var(--p-opacity, 0.7); }
+  85% { opacity: var(--p-opacity, 0.7); }
+  100% { transform: translate3d(var(--p-drift, 12px), -45vh, 0) scale(0.3); opacity: 0; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.08); }
+}
+
+@keyframes shine-sweep {
+  0% { transform: translateX(-160%) skewX(-20deg); }
+  55%, 100% { transform: translateX(260%) skewX(-20deg); }
+}
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float-hero {
+  0%, 100% { transform: translateY(0) rotate(-0.5deg); }
+  50% { transform: translateY(-12px) rotate(0.5deg); }
+}
+
+@utility animate-particle {
+  animation: particle-rise var(--p-duration, 14s) linear infinite;
+  animation-delay: var(--p-delay, 0s);
+  will-change: transform, opacity;
+}
+
+@utility animate-glow-pulse {
+  animation: glow-pulse 3.5s ease-in-out infinite;
+}
+
+@utility animate-shine {
+  animation: shine-sweep 3.2s ease-in-out infinite;
+}
+
+@utility animate-rise-in {
+  animation: rise-in 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: var(--rise-delay, 0s);
+}
+
+@utility animate-float-hero {
+  animation: float-hero 6s ease-in-out infinite;
+}
+
+@keyframes slide-from-right {
+  from { opacity: 0; transform: translate3d(48px, 0, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes slide-from-left {
+  from { opacity: 0; transform: translate3d(-48px, 0, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@utility animate-slide-from-right {
+  animation: slide-from-right 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@utility animate-slide-from-left {
+  animation: slide-from-left 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+/* Padrão de losangos ao fundo, inspirado em arenas de jogos mobile. */
+@utility bg-diamond-tiles {
+  background-image:
+    linear-gradient(45deg, oklch(1 0 0 / 0.045) 25%, transparent 25%, transparent 75%, oklch(1 0 0 / 0.045) 75%),
+    linear-gradient(-45deg, oklch(1 0 0 / 0.045) 25%, transparent 25%, transparent 75%, oklch(1 0 0 / 0.045) 75%);
+  background-size: 56px 56px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-particle,
+  .animate-glow-pulse,
+  .animate-shine,
+  .animate-float-hero,
+  .animate-rise-in,
+  .animate-slide-from-right,
+  .animate-slide-from-left {
+    animation: none;
+  }
+}

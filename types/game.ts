@@ -1,7 +1,9 @@
 import type { SceneId } from './scene'
 import type { ConnectionStatus } from './network'
 
-export type GamePhase = 'boot' | 'title' | 'loading' | 'world' | 'paused'
+export type GamePhase = 'boot' | 'title' | 'menu' | 'loading' | 'world' | 'paused'
+
+export type MenuScreen = 'main' | 'collection' | 'shop' | 'howToPlay' | 'settings'
 
 export interface GameSettings {
   sound: boolean
@@ -16,6 +18,7 @@ export interface GameSession {
 
 export interface GameState {
   phase: GamePhase
+  menuScreen: MenuScreen
   scene: SceneId
   session: GameSession | null
   settings: GameSettings
@@ -25,6 +28,8 @@ export interface GameState {
 
 export type GameAction =
   | { type: 'BOOT_COMPLETE' }
+  | { type: 'OPEN_MENU' }
+  | { type: 'SET_MENU_SCREEN'; screen: MenuScreen }
   | { type: 'START_GAME'; playerId: string }
   | { type: 'LOADING_COMPLETE'; scene: SceneId }
   | { type: 'PAUSE' }
