@@ -5,27 +5,28 @@ import type { MenuScreen } from '@/types'
 import { STRINGS } from '@/data/strings'
 import { useGameDispatch, useGameStore } from '@/hooks/use-game-store'
 import { cn } from '@/lib/utils'
+import { MENU_SCREEN_ORDER } from './menu-screens'
 
 interface NavItem {
-  screen: MenuScreen
   label: string
   ariaLabel?: string
   icon: LucideIcon
   primary?: boolean
 }
 
-const ITEMS: NavItem[] = [
-  { screen: 'shop', label: STRINGS.menu.shop, icon: ShoppingBag },
-  { screen: 'collection', label: STRINGS.menu.collection, icon: Layers },
-  { screen: 'main', label: STRINGS.menu.play, icon: Swords, primary: true },
-  { screen: 'howToPlay', label: STRINGS.menu.howToPlay, icon: BookOpen },
-  {
-    screen: 'settings',
+const NAV_ITEMS: Record<MenuScreen, NavItem> = {
+  shop: { label: STRINGS.menu.shop, icon: ShoppingBag },
+  collection: { label: STRINGS.menu.collection, icon: Layers },
+  main: { label: STRINGS.menu.play, icon: Swords, primary: true },
+  howToPlay: { label: STRINGS.menu.howToPlay, icon: BookOpen },
+  settings: {
     label: STRINGS.menu.settingsShort,
     ariaLabel: STRINGS.menu.settings,
     icon: Settings,
   },
-]
+}
+
+const ITEMS = MENU_SCREEN_ORDER.map((screen) => ({ screen, ...NAV_ITEMS[screen] }))
 
 export function MenuBottomNav() {
   const dispatch = useGameDispatch()

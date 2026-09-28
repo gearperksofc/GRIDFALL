@@ -236,6 +236,24 @@
   animation: float-hero 6s ease-in-out infinite;
 }
 
+@keyframes slide-from-right {
+  from { opacity: 0; transform: translate3d(48px, 0, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes slide-from-left {
+  from { opacity: 0; transform: translate3d(-48px, 0, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@utility animate-slide-from-right {
+  animation: slide-from-right 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@utility animate-slide-from-left {
+  animation: slide-from-left 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
 /* Padrão de losangos ao fundo, inspirado em arenas de jogos mobile. */
 @utility bg-diamond-tiles {
   background-image:
@@ -249,7 +267,9 @@
   .animate-glow-pulse,
   .animate-shine,
   .animate-float-hero,
-  .animate-rise-in {
+  .animate-rise-in,
+  .animate-slide-from-right,
+  .animate-slide-from-left {
     animation: none;
   }
 }
