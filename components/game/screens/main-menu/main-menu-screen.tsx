@@ -34,33 +34,72 @@ function MenuContent({ screen }: { screen: MenuScreen }) {
   }
 }
 
+/** Distância normalizada (0..1) de um painel até o centro da viewport. */
+function panelProgress(position: -1 | 0 | 1, offset: number, width: number) {
+  return Math.min(1, Math.abs(position * width + offset) / width)
+}
+
+interface PanelProps {
+  screen: MenuScreen
+  position: -1 | 0 | 1
+  offset: number
+  width: number
+  active: boolean
+  settleTiming: string | null
+}
+
+function MenuPanel({ screen, position, offset, width, active, settleTiming }: PanelProps) {
+  const progress = panelProgress(position, offset, width)
+  const scale = 1 - progress * 0.04
+  const opacity = 1 - progress * 0.45
+
+  return (
+    <div
+      aria-hidden={!active}
+      style={{
+        left: `${position * 100}%`,
+        transform: `scale(${scale})`,
+        opacity,
+        transition: settleTiming ? `transform ${settleTiming}, opacity ${settleTiming}` : 'none',
+      }}
+      className="absolute inset-y-0 flex w-full flex-col will-change-transform"
+    >
+      <MenuContent screen={screen} />
+    </div>
+  )
+}
+
 export function MainMenuScreen() {
-  const { current, dragX, dragging, enterDirection, handlers } = useSwipeNavigation()
+  const {
+    containerRef,
+    displayed,
+    leftScreen,
+    rightScreen,
+    offset,
+    width,
+    dragging,
+    settleTiming,
+    trackStyle,
+    handlers,
+    trackHandlers,
+  } = useSwipeNavigation()
+  const panelProps = { offset, width, settleTiming }
 
   return (
     <section className="relative flex h-full flex-col overflow-hidden">
       <MenuBackground />
       <div
+        ref={containerRef}
         {...handlers}
         className={cn(
-          'relative flex min-h-0 flex-1 flex-col touch-pan-y select-none',
+          'relative min-h-0 flex-1 touch-pan-y select-none overflow-hidden',
           dragging ? 'cursor-grabbing' : 'cursor-grab',
         )}
       >
-        <div
-          key={current}
-          style={{
-            transform: dragging ? `translate3d(${dragX}px, 0, 0)` : undefined,
-            opacity: dragging ? Math.max(0.4, 1 - Math.abs(dragX) / 600) : undefined,
-          }}
-          className={cn(
-            'flex min-h-0 flex-1 flex-col will-change-transform',
-            !dragging && 'transition-[transform,opacity] duration-200 ease-out',
-            !dragging && enterDirection === 1 && 'animate-slide-from-right',
-            !dragging && enterDirection === -1 && 'animate-slide-from-left',
-          )}
-        >
-          <MenuContent screen={current} />
+        <div {...trackHandlers} style={trackStyle} className="relative h-full w-full will-change-transform">
+          {leftScreen && <MenuPanel screen={leftScreen} position={-1} active={false} {...panelProps} />}
+          <MenuPanel screen={displayed} position={0} active {...panelProps} />
+          {rightScreen && <MenuPanel screen={rightScreen} position={1} active={false} {...panelProps} />}
         </div>
       </div>
       <MenuBottomNav />
