@@ -35,6 +35,42 @@ export const STRINGS = {
     on: 'Ligado',
     off: 'Desligado',
   },
+  modeSelect: {
+    heading: 'Modo de Jogo',
+    subheading: 'Escolha como deseja lutar',
+    available: 'Disponível',
+    inDevelopment: 'Em desenvolvimento',
+    back: 'Voltar',
+    play: 'Jogar',
+    locked: 'Bloqueado',
+    devNotice: {
+      pvp: 'PVP ONLINE ESTÁ EM DESENVOLVIMENTO.',
+      bossRush: 'BOSS RUSH ESTÁ EM DESENVOLVIMENTO.',
+      challenges: 'DESAFIOS ESTÃO EM DESENVOLVIMENTO.',
+    },
+    modes: {
+      vsBot: {
+        title: 'Partida vs Bot',
+        description: 'Enfrente uma inteligência artificial em uma batalha completa.',
+      },
+      pvp: {
+        title: 'Partida PVP',
+        description: 'Enfrente outro jogador online.',
+      },
+      bossRush: {
+        title: 'Boss Rush',
+        description: 'Enfrente uma sequência de bosses.',
+      },
+      challenges: {
+        title: 'Desafios',
+        description: 'Complete desafios especiais com regras diferentes.',
+      },
+      training: {
+        title: 'Treinamento',
+        description: 'Pratique suas habilidades sem risco.',
+      },
+    },
+  },
   loading: {
     heading: 'Carregando',
     tips: [
@@ -59,6 +95,8 @@ export const STRINGS = {
   world: {
     placeholder: 'O mundo aguarda seus primeiros habitantes.',
     hint: 'Use o direcional para explorar a região.',
+    trainingPlaceholder: 'Arena de treino: nenhum inimigo por aqui.',
+    trainingHint: 'Experimente os controles à vontade. Nada pode te ferir.',
   },
   controls: {
     up: 'Cima',

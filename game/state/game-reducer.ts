@@ -28,12 +28,15 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     case 'SET_MENU_SCREEN':
       return state.menuScreen === action.screen ? state : { ...state, menuScreen: action.screen }
 
+    case 'OPEN_MODE_SELECT':
+      return state.phase === 'menu' ? { ...state, phase: 'modeSelect', menuScreen: 'main' } : state
+
     case 'START_GAME':
       return {
         ...state,
         phase: 'loading',
         menuScreen: 'main',
-        session: { playerId: action.playerId, startedAt: Date.now() },
+        session: { playerId: action.playerId, mode: action.mode, startedAt: Date.now() },
       }
 
     case 'LOADING_COMPLETE':
