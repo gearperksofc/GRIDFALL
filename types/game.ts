@@ -1,9 +1,16 @@
 import type { SceneId } from './scene'
 import type { ConnectionStatus } from './network'
 
-export type GamePhase = 'boot' | 'title' | 'menu' | 'loading' | 'world' | 'paused'
+export type GamePhase = 'boot' | 'title' | 'menu' | 'modeSelect' | 'loading' | 'world' | 'paused'
 
 export type MenuScreen = 'main' | 'collection' | 'shop' | 'howToPlay' | 'settings'
+
+export type GameMode = 'vsBot' | 'pvp' | 'bossRush' | 'challenges' | 'training'
+
+export type GameModeStatus = 'available' | 'inDevelopment'
+
+/** Modos que já possuem um fluxo jogável. */
+export type PlayableGameMode = Extract<GameMode, 'vsBot' | 'training'>
 
 export interface GameSettings {
   sound: boolean
@@ -13,6 +20,7 @@ export interface GameSettings {
 
 export interface GameSession {
   playerId: string
+  mode: PlayableGameMode
   startedAt: number
 }
 
@@ -30,7 +38,8 @@ export type GameAction =
   | { type: 'BOOT_COMPLETE' }
   | { type: 'OPEN_MENU' }
   | { type: 'SET_MENU_SCREEN'; screen: MenuScreen }
-  | { type: 'START_GAME'; playerId: string }
+  | { type: 'OPEN_MODE_SELECT' }
+  | { type: 'START_GAME'; playerId: string; mode: PlayableGameMode }
   | { type: 'LOADING_COMPLETE'; scene: SceneId }
   | { type: 'PAUSE' }
   | { type: 'RESUME' }

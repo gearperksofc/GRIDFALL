@@ -2,13 +2,12 @@
 
 import { Swords } from 'lucide-react'
 import { STRINGS } from '@/data/strings'
-import { createId } from '@/lib/id'
 import { useGameDispatch } from '@/hooks/use-game-store'
 
 export function PlayButton() {
   const dispatch = useGameDispatch()
 
-  const startGame = () => dispatch({ type: 'START_GAME', playerId: createId('player') })
+  const startGame = () => dispatch({ type: 'OPEN_MODE_SELECT' })
 
   return (
     <div className="animate-rise-in relative z-10 flex justify-center px-6 py-3 [--rise-delay:0.16s]">

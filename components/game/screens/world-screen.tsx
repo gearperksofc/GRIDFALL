@@ -12,6 +12,7 @@ import { PauseMenu } from './pause-menu'
 export function WorldScreen() {
   const dispatch = useGameDispatch()
   const phase = useGameStore((s) => s.phase)
+  const isTraining = useGameStore((s) => s.session?.mode === 'training')
   const isPaused = phase === 'paused'
 
   useEffect(() => {
@@ -34,9 +35,11 @@ export function WorldScreen() {
 
       <div className="pointer-events-none absolute inset-x-0 top-[62%] px-8 text-center">
         <p className="text-shadow-pixel font-display text-[10px] leading-relaxed text-parchment/80">
-          {STRINGS.world.placeholder}
+          {isTraining ? STRINGS.world.trainingPlaceholder : STRINGS.world.placeholder}
         </p>
-        <p className="mt-2 text-sm text-parchment/50">{STRINGS.world.hint}</p>
+        <p className="mt-2 text-sm text-parchment/50">
+          {isTraining ? STRINGS.world.trainingHint : STRINGS.world.hint}
+        </p>
       </div>
 
       <VirtualControls />

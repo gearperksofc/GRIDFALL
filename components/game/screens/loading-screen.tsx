@@ -2,15 +2,17 @@
 
 import { useEffect, useState } from 'react'
 import { GAME_CONFIG } from '@/data/config'
-import { INITIAL_SCENE, SCENES } from '@/data/scenes'
+import { INITIAL_SCENE, SCENES, TRAINING_SCENE } from '@/data/scenes'
 import { STRINGS } from '@/data/strings'
-import { useGameDispatch } from '@/hooks/use-game-store'
+import { useGameDispatch, useGameStore } from '@/hooks/use-game-store'
 import { RpgFrame } from '../ui/rpg-frame'
 
 const STEPS = 20
 
 export function LoadingScreen() {
   const dispatch = useGameDispatch()
+  const mode = useGameStore((s) => s.session?.mode ?? 'vsBot')
+  const targetScene = mode === 'training' ? TRAINING_SCENE : INITIAL_SCENE
   const [progress, setProgress] = useState(0)
   const [tip] = useState(
     () => STRINGS.loading.tips[Math.floor(Math.random() * STRINGS.loading.tips.length)],
@@ -24,11 +26,11 @@ export function LoadingScreen() {
       setProgress(Math.min(1, step / STEPS))
       if (step >= STEPS) {
         window.clearInterval(id)
-        dispatch({ type: 'LOADING_COMPLETE', scene: INITIAL_SCENE })
+        dispatch({ type: 'LOADING_COMPLETE', scene: targetScene })
       }
     }, interval)
     return () => window.clearInterval(id)
-  }, [dispatch])
+  }, [dispatch, targetScene])
 
   const percent = Math.round(progress * 100)
 
@@ -43,7 +45,7 @@ export function LoadingScreen() {
           {STRINGS.loading.heading}
         </p>
         <h2 className="text-shadow-pixel mt-3 font-display text-base text-gold">
-          {SCENES[INITIAL_SCENE].name}
+          {SCENES[targetScene].name}
         </h2>
       </div>
 

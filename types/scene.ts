@@ -1,4 +1,4 @@
-export type SceneId = 'title' | 'world'
+export type SceneId = 'title' | 'world' | 'training'
 
 export interface SceneDefinition {
   id: SceneId

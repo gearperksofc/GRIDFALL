@@ -11,6 +11,13 @@ export const SCENES: Record<SceneId, SceneDefinition> = {
     name: 'Planícies de Eldoria',
     description: 'Região inicial do mundo. Em breve receberá vilas, masmorras e criaturas.',
   },
+  training: {
+    id: 'training',
+    name: 'Arena de Treino',
+    description: 'Campo de testes seguro. Pratique movimentação e habilidades sem risco.',
+  },
 }
 
 export const INITIAL_SCENE: SceneId = 'world'
+
+export const TRAINING_SCENE: SceneId = 'training'
