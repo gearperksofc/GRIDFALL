@@ -12,9 +12,9 @@ export interface MatchStepDefinition {
  */
 export const MATCH_FLOW: MatchStepDefinition[] = [
   { id: 'preparation', implemented: true },
-  { id: 'farming', implemented: false },
-  { id: 'build', implemented: false },
-  { id: 'chest', implemented: false },
+  { id: 'farming', implemented: true },
+  { id: 'build', implemented: true },
+  { id: 'chest', implemented: true },
   { id: 'battle', implemented: true },
   { id: 'result', implemented: true },
 ]

@@ -1,4 +1,5 @@
-import type { MatchOutcome, MatchResult, StageId } from '@/types'
+import type { BuildAllocation, FarmingResult, InventoryItem, MatchOutcome, MatchResult, StageId } from '@/types'
+import { getFarmingBonus, getSpentStars, getTotalStars } from '@/game/build/build-system'
 import { getStage } from '@/data/stages'
 import { createId } from '@/lib/id'
 import { gameStore } from '@/game/state/game-store'
@@ -14,6 +15,29 @@ export function startStageMatch(stageId: StageId) {
 
 export function startTraining() {
   gameStore.dispatch({ type: 'START_TRAINING', playerId: createId('player') })
+}
+
+/** Consolida o Farming aplicando o bônus do atributo FARMING já investido. */
+export function finishFarming(raw: Omit<FarmingResult, 'round' | 'bonusStars' | 'totalStars'>) {
+  const { session } = gameStore.getState()
+  if (!session) return
+  const bonusStars = Math.floor(raw.baseStars * getFarmingBonus(session.build))
+  gameStore.dispatch({
+    type: 'FINISH_FARMING',
+    result: { ...raw, round: session.farmingRound, bonusStars, totalStars: raw.baseStars + bonusStars },
+  })
+}
+
+export function confirmBuild(allocation: BuildAllocation) {
+  const { session } = gameStore.getState()
+  if (!session) return
+  const total = getTotalStars(session.farmingResults)
+  if (getSpentStars(allocation) > total) return
+  gameStore.dispatch({ type: 'CONFIRM_BUILD', allocation })
+}
+
+export function claimChest(items: InventoryItem[]) {
+  gameStore.dispatch({ type: 'CLAIM_CHEST', items })
 }
 
 export function finishMatch(outcome: MatchOutcome) {

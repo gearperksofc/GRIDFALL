@@ -10,6 +10,9 @@ import { MainMenuScreen } from './screens/main-menu/main-menu-screen'
 import { ModeSelectScreen } from './screens/mode-select/mode-select-screen'
 import { StageSelectScreen } from './screens/stage-select/stage-select-screen'
 import { PreparationScreen } from './screens/preparation/preparation-screen'
+import { FarmingScreen } from './screens/farming/farming-screen'
+import { BuildScreen } from './screens/build/build-screen'
+import { ChestScreen } from './screens/chest/chest-screen'
 import { LoadingScreen } from './screens/loading-screen'
 import { BattleScreen } from './screens/battle/battle-screen'
 import { TrainingScreen } from './screens/training/training-screen'
@@ -37,6 +40,9 @@ export function GameRoot() {
       {phase === 'modeSelect' && <ModeSelectScreen />}
       {phase === 'stageSelect' && <StageSelectScreen />}
       {phase === 'preparation' && <PreparationScreen />}
+      {phase === 'farming' && <FarmingScreen />}
+      {phase === 'build' && <BuildScreen />}
+      {phase === 'chest' && <ChestScreen />}
       {phase === 'loading' && <LoadingScreen />}
       {inArena && (isTraining ? <TrainingScreen /> : <BattleScreen />)}
       {phase === 'result' && <ResultScreen />}

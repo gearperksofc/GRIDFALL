@@ -1,4 +1,7 @@
 import type { EnemyStats } from '@/types'
+import { PLAYER_UNIT_TEMPLATE, UNIT_TEMPLATES } from './units'
+
+const hero = UNIT_TEMPLATES[PLAYER_UNIT_TEMPLATE]
 
 export type LoadoutSlotId = 'main' | 'support' | 'assist'
 
@@ -28,11 +31,16 @@ export const DEFAULT_LOADOUT: LoadoutSlot[] = [
     id: 'main',
     available: true,
     unit: {
-      id: 'hero-default',
-      name: 'Aventureiro',
-      role: 'Guerreiro',
+      id: hero.id,
+      name: hero.name,
+      role: hero.title,
       level: 1,
-      stats: { hp: 110, atk: 13, def: 7, spd: 6 },
+      stats: {
+        hp: hero.baseStats.maxHp,
+        atk: hero.baseStats.attack,
+        def: hero.baseStats.defense,
+        spd: hero.baseStats.speed,
+      },
     },
   },
   { id: 'support', available: false, unit: null },

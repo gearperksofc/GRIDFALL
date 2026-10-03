@@ -1,5 +1,6 @@
-import type { GameAction, GamePhase, GameState, MatchStep } from '@/types'
+import type { GameAction, GamePhase, GameSession, GameState, MatchStep, StageId } from '@/types'
 import { getNextMatchStep } from '@/data/match-flow'
+import { EMPTY_BUILD } from '@/game/build/build-system'
 
 export const INITIAL_GAME_STATE: GameState = {
   phase: 'title',
@@ -21,8 +22,44 @@ export const INITIAL_GAME_STATE: GameState = {
 /** Fase de tela de cada etapa implementada da partida. */
 const STEP_PHASE: Partial<Record<MatchStep, GamePhase>> = {
   preparation: 'preparation',
+  farming: 'farming',
+  build: 'build',
+  chest: 'chest',
   battle: 'loading',
   result: 'result',
+}
+
+/** Fases da partida em que sair exige confirmação. */
+const GUARDED_PHASES: GamePhase[] = ['farming', 'build', 'chest', 'world', 'paused']
+
+function createSession(
+  playerId: string,
+  mode: GameSession['mode'],
+  stageId: StageId | null,
+  step: MatchStep,
+  attempt = 1,
+): GameSession {
+  return {
+    playerId,
+    mode,
+    stageId,
+    step,
+    attempt,
+    startedAt: Date.now(),
+    battleStartedAt: null,
+    farmingRound: 1,
+    farmingResults: [],
+    build: EMPTY_BUILD,
+    inventory: [],
+  }
+}
+
+/** Avança para a próxima etapa implementada do fluxo vs Bot. */
+function advance(state: GameState, session: GameSession): GameState {
+  const next = getNextMatchStep(session.step)
+  const phase = next ? STEP_PHASE[next] : undefined
+  if (!next || !phase) return { ...state, session }
+  return { ...state, phase, exitPrompt: false, session: { ...session, step: next } }
 }
 
 /** Sai da partida atual e volta para a tela que a originou. */
@@ -49,6 +86,10 @@ function goBack(state: GameState): GameState {
         : { ...state, phase: 'modeSelect' }
     case 'preparation':
       return { ...state, phase: 'stageSelect', session: null }
+    case 'farming':
+    case 'build':
+    case 'chest':
+      return { ...state, exitPrompt: true }
     case 'world':
       return state.session?.mode === 'training' ? leaveMatch(state) : { ...state, exitPrompt: true }
     case 'paused':
@@ -98,15 +139,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         selectedStageId: action.stageId,
         exitPrompt: false,
         lastResult: null,
-        session: {
-          playerId: action.playerId,
-          mode: 'vsBot',
-          stageId: action.stageId,
-          step: 'preparation',
-          attempt: 1,
-          startedAt: Date.now(),
-          battleStartedAt: null,
-        },
+        session: createSession(action.playerId, 'vsBot', action.stageId, 'preparation'),
       }
 
     case 'START_TRAINING':
@@ -116,24 +149,35 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         menuScreen: 'main',
         exitPrompt: false,
         lastResult: null,
-        session: {
-          playerId: action.playerId,
-          mode: 'training',
-          stageId: null,
-          step: 'battle',
-          attempt: 1,
-          startedAt: Date.now(),
-          battleStartedAt: null,
-        },
+        session: createSession(action.playerId, 'training', null, 'battle'),
       }
 
-    case 'ADVANCE_MATCH': {
+    case 'ADVANCE_MATCH':
       if (!state.session || state.session.mode !== 'vsBot') return state
-      const next = getNextMatchStep(state.session.step)
-      const phase = next ? STEP_PHASE[next] : undefined
-      if (!next || !phase) return state
-      return { ...state, phase, session: { ...state.session, step: next } }
-    }
+      return advance(state, state.session)
+
+    case 'FINISH_FARMING':
+      if (state.session?.step !== 'farming') return state
+      return advance(state, {
+        ...state.session,
+        farmingResults: [...state.session.farmingResults, action.result],
+        farmingRound: state.session.farmingRound + 1,
+      })
+
+    case 'CONFIRM_BUILD':
+      if (state.session?.step !== 'build') return state
+      return advance(state, { ...state.session, build: action.allocation })
+
+    case 'CLAIM_CHEST':
+      if (state.session?.step !== 'chest') return state
+      return advance(state, { ...state.session, inventory: [...state.session.inventory, ...action.items] })
+
+    case 'USE_ITEM':
+      if (!state.session) return state
+      return {
+        ...state,
+        session: { ...state.session, inventory: state.session.inventory.filter((i) => i.uid !== action.uid) },
+      }
 
     case 'LOADING_COMPLETE':
       return {
@@ -160,17 +204,17 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         phase: 'preparation',
         exitPrompt: false,
         lastResult: null,
-        session: {
-          ...state.session,
-          step: 'preparation',
-          attempt: state.session.attempt + 1,
-          startedAt: Date.now(),
-          battleStartedAt: null,
-        },
+        session: createSession(
+          state.session.playerId,
+          'vsBot',
+          state.session.stageId,
+          'preparation',
+          state.session.attempt + 1,
+        ),
       }
 
     case 'REQUEST_EXIT': {
-      const inMatch = (state.phase === 'world' || state.phase === 'paused') && state.session?.mode === 'vsBot'
+      const inMatch = GUARDED_PHASES.includes(state.phase) && state.session?.mode === 'vsBot'
       return inMatch ? { ...state, exitPrompt: true } : state
     }
 

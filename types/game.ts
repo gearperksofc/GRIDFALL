@@ -2,6 +2,9 @@ import type { SceneId } from './scene'
 import type { ConnectionStatus } from './network'
 import type { StageId } from './stage'
 import type { MatchResult, MatchStep } from './match'
+import type { FarmingResult } from './farming'
+import type { BuildAllocation } from './build'
+import type { InventoryItem } from './item'
 
 export type GamePhase =
   | 'boot'
@@ -10,6 +13,9 @@ export type GamePhase =
   | 'modeSelect'
   | 'stageSelect'
   | 'preparation'
+  | 'farming'
+  | 'build'
+  | 'chest'
   | 'loading'
   | 'world'
   | 'paused'
@@ -39,6 +45,13 @@ export interface GameSession {
   attempt: number
   startedAt: number
   battleStartedAt: number | null
+  /** Rodada de Farming atual (1 = primeira). */
+  farmingRound: number
+  farmingResults: FarmingResult[]
+  /** Pontos de estrela distribuídos nos atributos. */
+  build: BuildAllocation
+  /** Inventário temporário — descartado ao fim da partida. */
+  inventory: InventoryItem[]
 }
 
 export interface GameState {
@@ -66,6 +79,10 @@ export type GameAction =
   | { type: 'START_MATCH'; playerId: string; stageId: StageId }
   | { type: 'START_TRAINING'; playerId: string }
   | { type: 'ADVANCE_MATCH' }
+  | { type: 'FINISH_FARMING'; result: FarmingResult }
+  | { type: 'CONFIRM_BUILD'; allocation: BuildAllocation }
+  | { type: 'CLAIM_CHEST'; items: InventoryItem[] }
+  | { type: 'USE_ITEM'; uid: string }
   | { type: 'LOADING_COMPLETE'; scene: SceneId }
   | { type: 'END_MATCH'; result: MatchResult }
   | { type: 'RETRY_STAGE' }
