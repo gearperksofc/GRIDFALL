@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { GAME_CONFIG } from '@/data/config'
 import { INITIAL_SCENE, SCENES, TRAINING_SCENE } from '@/data/scenes'
+import { getStage } from '@/data/stages'
 import { STRINGS } from '@/data/strings'
 import { useGameDispatch, useGameStore } from '@/hooks/use-game-store'
 import { RpgFrame } from '../ui/rpg-frame'
@@ -12,7 +13,9 @@ const STEPS = 20
 export function LoadingScreen() {
   const dispatch = useGameDispatch()
   const mode = useGameStore((s) => s.session?.mode ?? 'vsBot')
+  const stage = getStage(useGameStore((s) => s.session?.stageId ?? null))
   const targetScene = mode === 'training' ? TRAINING_SCENE : INITIAL_SCENE
+  const heading = stage ? `${STRINGS.stageSelect.stage} ${stage.number} — ${stage.name}` : SCENES[targetScene].name
   const [progress, setProgress] = useState(0)
   const [tip] = useState(
     () => STRINGS.loading.tips[Math.floor(Math.random() * STRINGS.loading.tips.length)],
@@ -44,9 +47,12 @@ export function LoadingScreen() {
         <p className="font-display text-[10px] uppercase tracking-widest text-muted-foreground">
           {STRINGS.loading.heading}
         </p>
-        <h2 className="text-shadow-pixel mt-3 font-display text-base text-gold">
-          {SCENES[targetScene].name}
-        </h2>
+        <h2 className="text-shadow-pixel mt-3 font-display text-base text-gold">{heading}</h2>
+        {stage && (
+          <p className="mt-2 font-display text-[8px] text-parchment/70">
+            {STRINGS.battle.vs} {stage.enemy.name}
+          </p>
+        )}
       </div>
 
       <RpgFrame className="w-full max-w-sm p-4">

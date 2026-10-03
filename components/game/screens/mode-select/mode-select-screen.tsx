@@ -1,71 +1,48 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
 import { ChevronLeft, Swords } from 'lucide-react'
 import { GAME_MODES, isPlayableMode, type GameModeDefinition } from '@/data/game-modes'
 import { STRINGS } from '@/data/strings'
-import { createId } from '@/lib/id'
+import { startTraining } from '@/game/match/match-controller'
 import { useGameDispatch } from '@/hooks/use-game-store'
+import { useTransientNotice } from '@/hooks/use-transient-notice'
 import { MenuBackground } from '../main-menu/menu-background'
+import { ScreenHeader } from '../../ui/screen-header'
 import { ModeCard } from './mode-card'
 import { DevNotice } from './dev-notice'
-
-const NOTICE_DURATION_MS = 2200
 
 const [featuredMode, ...otherModes] = GAME_MODES
 
 export function ModeSelectScreen() {
   const dispatch = useGameDispatch()
-  const [notice, setNotice] = useState<string | null>(null)
-  const noticeTimer = useRef<number | null>(null)
-
-  useEffect(() => {
-    return () => {
-      if (noticeTimer.current) window.clearTimeout(noticeTimer.current)
-    }
-  }, [])
-
-  const showNotice = (message: string) => {
-    if (noticeTimer.current) window.clearTimeout(noticeTimer.current)
-    setNotice(message)
-    noticeTimer.current = window.setTimeout(() => setNotice(null), NOTICE_DURATION_MS)
-  }
+  const { notice, show } = useTransientNotice()
 
   const handleSelect = (mode: GameModeDefinition) => {
     if (mode.status !== 'available' || !isPlayableMode(mode.id)) {
-      showNotice(mode.devNotice ?? STRINGS.modeSelect.inDevelopment)
+      show(mode.devNotice ?? STRINGS.modeSelect.inDevelopment)
       return
     }
-    dispatch({ type: 'START_GAME', playerId: createId('player'), mode: mode.id })
+    if (mode.id === 'vsBot') {
+      dispatch({ type: 'OPEN_STAGE_SELECT' })
+      return
+    }
+    startTraining()
   }
 
-  const goBack = () => dispatch({ type: 'OPEN_MENU' })
+  const goBack = () => dispatch({ type: 'GO_BACK' })
 
   return (
     <section className="relative flex h-full flex-col overflow-hidden" aria-labelledby="mode-select-heading">
       <MenuBackground />
 
-      <header className="animate-rise-in relative z-10 flex items-center gap-2 px-4 pt-3">
-        <button
-          type="button"
-          onClick={goBack}
-          aria-label={STRINGS.modeSelect.back}
-          className="flex size-11 shrink-0 items-center justify-center rounded-lg border-2 border-panel-edge bg-[linear-gradient(180deg,oklch(0.35_0.06_270),oklch(0.24_0.05_270))] text-parchment shadow-[inset_0_2px_0_oklch(1_0_0/0.08),0_3px_0_oklch(0_0_0/0.5)] transition-transform duration-100 active:translate-y-0.5 active:shadow-[inset_0_2px_0_oklch(1_0_0/0.08),0_1px_0_oklch(0_0_0/0.5)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-arcane"
-        >
-          <ChevronLeft className="size-6" aria-hidden="true" />
-        </button>
-        <div className="flex flex-1 flex-col items-center rounded-lg border-2 border-gold-dim bg-night-deep/85 px-4 py-2 shadow-[inset_0_0_0_2px_oklch(1_0_0/0.05),0_4px_0_oklch(0_0_0/0.6)]">
-          <h2
-            id="mode-select-heading"
-            className="text-shadow-pixel flex items-center gap-2 font-display text-sm text-gold uppercase"
-          >
-            <Swords className="size-4" aria-hidden="true" />
-            {STRINGS.modeSelect.heading}
-          </h2>
-          <p className="font-body text-sm text-parchment/65">{STRINGS.modeSelect.subheading}</p>
-        </div>
-        <span aria-hidden="true" className="size-11 shrink-0" />
-      </header>
+      <ScreenHeader
+        headingId="mode-select-heading"
+        title={STRINGS.modeSelect.heading}
+        subtitle={STRINGS.modeSelect.subheading}
+        icon={Swords}
+        backLabel={STRINGS.modeSelect.back}
+        onBack={goBack}
+      />
 
       <div className="relative z-10 min-h-0 flex-1 overflow-y-auto px-4 pt-4 pb-4 [scrollbar-width:thin]">
         <div className="mx-auto flex w-full max-w-lg flex-col gap-3">
