@@ -3,6 +3,7 @@
 import { Pause, Wifi, WifiOff } from 'lucide-react'
 import type { ConnectionStatus } from '@/types'
 import { SCENES } from '@/data/scenes'
+import { getStage } from '@/data/stages'
 import { STRINGS } from '@/data/strings'
 import { cn } from '@/lib/utils'
 import { useGameDispatch, useGameStore } from '@/hooks/use-game-store'
@@ -17,16 +18,32 @@ const connectionLabel: Record<ConnectionStatus, string> = {
 export function Hud() {
   const dispatch = useGameDispatch()
   const scene = useGameStore((s) => s.scene)
+  const stageId = useGameStore((s) => s.session?.stageId ?? null)
+  const attempt = useGameStore((s) => s.session?.attempt ?? 1)
   const connection = useGameStore((s) => s.connection)
   const fps = useGameStore((s) => s.fps)
   const showDebug = useGameStore((s) => s.settings.showDebug)
 
+  const stage = getStage(stageId)
   const isOnline = connection === 'online'
 
   return (
     <header className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-3">
       <div className="rpg-frame pointer-events-auto flex flex-col gap-1 px-3 py-2">
-        <h2 className="text-shadow-pixel font-display text-[9px] text-gold">{SCENES[scene].name}</h2>
+        <h2 className="text-shadow-pixel font-display text-[9px] text-gold">
+          {stage ? `${STRINGS.stageSelect.stage} ${stage.number} — ${stage.name}` : SCENES[scene].name}
+        </h2>
+        {stage && (
+          <p className="font-display text-[7px] text-parchment/80">
+            {STRINGS.battle.vs} {stage.enemy.name}
+            {attempt > 1 && (
+              <span className="text-parchment/50">
+                {' '}
+                · {STRINGS.battle.attempt} {attempt}
+              </span>
+            )}
+          </p>
+        )}
         <div className="flex items-center gap-3 text-xs text-muted-foreground">
           <span className={cn('inline-flex items-center gap-1', isOnline && 'text-arcane')}>
             {isOnline ? (

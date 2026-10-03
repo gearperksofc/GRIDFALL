@@ -28,7 +28,7 @@ export function PauseMenu() {
         <RpgButton variant="ghost" disabled>
           {STRINGS.pause.settings}
         </RpgButton>
-        <RpgButton variant="ghost" onClick={() => dispatch({ type: 'RETURN_TO_TITLE' })}>
+        <RpgButton variant="ghost" onClick={() => dispatch({ type: 'REQUEST_EXIT' })}>
           {STRINGS.pause.quit}
         </RpgButton>
       </RpgFrame>
