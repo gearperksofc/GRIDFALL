@@ -69,8 +69,8 @@ function FloatingEffect({ effect, board, onExpire }: { effect: BattleEffect; boa
         isPlayerDamage && 'text-destructive',
       )}
       style={{
-        left: `calc(${anchor.x}% + ${effect.offsetX}px)`,
-        top: `${anchor.y}%`,
+                left: `calc(${anchor.x}% + ${effect.offsetX}px)`,
+                top: `calc(${anchor.y}% - ${Math.abs(effect.offsetX) % 3 * 14}px)`,
         transform: 'translate(-50%, -100%)',
       }}
     >
