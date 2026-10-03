@@ -1,6 +1,7 @@
 import type { BuildAllocation, FarmingResult, InventoryItem, MatchOutcome, MatchResult, StageId } from '@/types'
 import { getFarmingBonus, getSpentStars, getTotalStars } from '@/game/build/build-system'
 import { getStage } from '@/data/stages'
+import { MATCH_PHASES } from '@/data/match-flow'
 import { createId } from '@/lib/id'
 import { gameStore } from '@/game/state/game-store'
 import { progressStore } from '@/game/progress/progress-store'
@@ -38,6 +39,20 @@ export function confirmBuild(allocation: BuildAllocation) {
 
 export function claimChest(items: InventoryItem[]) {
   gameStore.dispatch({ type: 'CLAIM_CHEST', items })
+}
+
+/**
+ * Fim de uma batalha. Derrota encerra a partida; vitória avança para o
+ * próximo Farming até completar todas as fases, quando a partida é vencida.
+ */
+export function finishBattle(outcome: MatchOutcome) {
+  const { session } = gameStore.getState()
+  if (!session) return
+  if (outcome === 'victory' && session.matchPhase < MATCH_PHASES) {
+    gameStore.dispatch({ type: 'NEXT_MATCH_PHASE' })
+    return
+  }
+  finishMatch(outcome)
 }
 
 export function finishMatch(outcome: MatchOutcome) {

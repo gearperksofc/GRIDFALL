@@ -1,5 +1,5 @@
 import type { GameAction, GamePhase, GameSession, GameState, MatchStep, StageId } from '@/types'
-import { getNextMatchStep } from '@/data/match-flow'
+import { MATCH_PHASES, getNextMatchStep } from '@/data/match-flow'
 import { EMPTY_BUILD } from '@/game/build/build-system'
 
 export const INITIAL_GAME_STATE: GameState = {
@@ -47,6 +47,7 @@ function createSession(
     attempt,
     startedAt: Date.now(),
     battleStartedAt: null,
+    matchPhase: 1,
     farmingRound: 1,
     farmingResults: [],
     build: EMPTY_BUILD,
@@ -178,6 +179,18 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         ...state,
         session: { ...state.session, inventory: state.session.inventory.filter((i) => i.uid !== action.uid) },
       }
+
+    case 'NEXT_MATCH_PHASE': {
+      const session = state.session
+      if (!session || session.mode !== 'vsBot' || session.step !== 'battle') return state
+      if (session.matchPhase >= MATCH_PHASES) return state
+      return {
+        ...state,
+        phase: 'farming',
+        exitPrompt: false,
+        session: { ...session, step: 'farming', matchPhase: session.matchPhase + 1 },
+      }
+    }
 
     case 'LOADING_COMPLETE':
       return {

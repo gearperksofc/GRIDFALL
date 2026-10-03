@@ -1,6 +1,7 @@
 import type { GameSession, Unit, UnitStats, UnitTeam, UnitTemplate } from '@/types'
 import { ENEMY_UNIT_TEMPLATE, PLAYER_UNIT_TEMPLATE, getUnitTemplate } from '@/data/units'
 import { getStage } from '@/data/stages'
+import { getSkills } from '@/data/skills'
 import { applyBuildToStats } from '@/game/build/build-system'
 import { applyEquipmentToStats } from '@/game/chest/chest-system'
 
@@ -43,7 +44,7 @@ export function createUnit(templateId: string, { team, level = 1, stats, name }:
     attack: final.attack,
     defense: final.defense,
     speed: final.speed,
-    skills: template.skills,
+    skills: getSkills(template.skillIds),
     passive: template.passive,
   }
 }
@@ -59,7 +60,9 @@ export function createPlayerUnit(session: GameSession): Unit {
   return createUnit(PLAYER_UNIT_TEMPLATE, { team: 'player', stats: getPlayerStats(session) })
 }
 
+/** O bot sobe um nível a cada batalha da partida (Battle 1, 2, 3). */
 export function createEnemyUnit(session: GameSession): Unit {
   const stage = getStage(session.stageId)
-  return createUnit(ENEMY_UNIT_TEMPLATE, { team: 'enemy', level: stage?.enemy.level ?? 1 })
+  const level = (stage?.enemy.level ?? 1) + Math.max(0, session.matchPhase - 1)
+  return createUnit(ENEMY_UNIT_TEMPLATE, { team: 'enemy', level, name: stage?.enemy.name })
 }

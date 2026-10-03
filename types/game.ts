@@ -45,6 +45,8 @@ export interface GameSession {
   attempt: number
   startedAt: number
   battleStartedAt: number | null
+  /** Fase da partida (Farming N / Battle N). 1..MATCH_PHASES. */
+  matchPhase: number
   /** Rodada de Farming atual (1 = primeira). */
   farmingRound: number
   farmingResults: FarmingResult[]
@@ -83,6 +85,7 @@ export type GameAction =
   | { type: 'CONFIRM_BUILD'; allocation: BuildAllocation }
   | { type: 'CLAIM_CHEST'; items: InventoryItem[] }
   | { type: 'USE_ITEM'; uid: string }
+  | { type: 'NEXT_MATCH_PHASE' }
   | { type: 'LOADING_COMPLETE'; scene: SceneId }
   | { type: 'END_MATCH'; result: MatchResult }
   | { type: 'RETRY_STAGE' }

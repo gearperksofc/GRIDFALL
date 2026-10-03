@@ -34,6 +34,8 @@ export interface EnemyDefinition {
   stats: EnemyStats
   skills: string[]
   ai: AiProfile
+  /** Personalidade em `game/ai/enemy-ai.ts`. Padrão: 'balanced'. */
+  aiPersonality?: string
 }
 
 export interface RewardItem {

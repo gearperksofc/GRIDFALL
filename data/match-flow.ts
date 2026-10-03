@@ -19,6 +19,9 @@ export const MATCH_FLOW: MatchStepDefinition[] = [
   { id: 'result', implemented: true },
 ]
 
+/** Quantidade de ciclos Farming → Build → Baú → Batalha em uma partida. */
+export const MATCH_PHASES = 3
+
 export function getNextMatchStep(current: MatchStep): MatchStep | null {
   const index = MATCH_FLOW.findIndex((step) => step.id === current)
   if (index === -1) return null

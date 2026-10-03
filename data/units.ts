@@ -12,29 +12,7 @@ export const UNIT_TEMPLATES = {
     sprite: '/images/units/espadashim.png',
     baseStats: { maxHp: 120, maxMp: 40, attack: 14, defense: 8, speed: 7 },
     growth: { maxHp: 12, maxMp: 3, attack: 1.5, defense: 1, speed: 0.5 },
-    skills: [
-      {
-        id: 'corte-rapido',
-        name: 'Corte Rápido',
-        description: 'Golpe veloz no alvo à frente.',
-        mpCost: 8,
-        cooldownMs: 2500,
-      },
-      {
-        id: 'investida',
-        name: 'Investida',
-        description: 'Avança uma casa e golpeia.',
-        mpCost: 14,
-        cooldownMs: 5000,
-      },
-      {
-        id: 'lamina-giratoria',
-        name: 'Lâmina Giratória',
-        description: 'Atinge todas as casas ao redor.',
-        mpCost: 22,
-        cooldownMs: 9000,
-      },
-    ],
+    skillIds: ['chuva-de-meteoros', 'ordem-de-laceracao', 'barreira-gaia', 'golpe-direto'],
     passive: {
       id: 'fio-afiado',
       name: 'Fio Afiado',

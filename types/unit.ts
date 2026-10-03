@@ -1,3 +1,5 @@
+import type { SkillDefinition } from './skill'
+
 export type UnitTeam = 'player' | 'enemy'
 
 /** Atributos numéricos de combate. Base para builds, itens e crescimento por nível. */
@@ -10,15 +12,6 @@ export interface UnitStats {
 }
 
 export type UnitStatKey = keyof UnitStats
-
-/** Habilidade declarada. A execução será ligada no sistema de skills. */
-export interface UnitSkill {
-  id: string
-  name: string
-  description: string
-  mpCost: number
-  cooldownMs: number
-}
 
 export interface UnitPassive {
   id: string
@@ -35,7 +28,8 @@ export interface UnitTemplate {
   baseStats: UnitStats
   /** Ganho de atributos por nível acima do 1. */
   growth: Partial<UnitStats>
-  skills: UnitSkill[]
+  /** Ids das skills em `data/skills.ts`. */
+  skillIds: string[]
   passive: UnitPassive
 }
 
@@ -54,6 +48,6 @@ export interface Unit {
   attack: number
   defense: number
   speed: number
-  skills: UnitSkill[]
+  skills: SkillDefinition[]
   passive: UnitPassive
 }
